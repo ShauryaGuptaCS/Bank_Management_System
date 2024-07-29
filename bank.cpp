@@ -27,8 +27,17 @@ void Bank::open_account() {
     getline(cin, name);
     cout << "Enter your address: ";
     getline(cin, address);
-    cout << "What type of account you want to open - saving(S) or current(C): ";
-    cin >> acc_type;
+
+    // Validate account type
+    do {
+        cout << "What type of account you want to open - saving(S) or current(C): ";
+        cin >> acc_type;
+        acc_type = toupper(acc_type);  // Convert to uppercase to handle both 's' and 'S'
+        if (acc_type != 'S' && acc_type != 'C') {
+            cout << "Invalid account type. Please enter 'S' for saving or 'C' for current.\n";
+        }
+    } while (acc_type != 'S' && acc_type != 'C');
+
     cout << "Enter how much money you want to deposit: ";
     cin >> balance;
     cout << "Account Created Successfully\n";
@@ -68,18 +77,29 @@ void Bank::display_account() {
 
 void Bank::save_account() {
     ofstream file("accounts.txt");
-    file << name << "\n" << address << "\n" << acc_type << "\n" << balance << "\n";
+    file << "Name: " << name << "\n";
+    file << "Address: " << address << "\n";
+    file << "Type: " << acc_type << "\n";
+    file << "Balance: " << balance << "\n";
     file.close();
 }
 
 void Bank::load_account() {
     ifstream file("accounts.txt");
     if (file.is_open()) {
-        getline(file, name);
-        getline(file, address);
-        file >> acc_type;
-        file >> balance;
-        file.ignore(); // To ignore the newline character after reading balance
+        string line, label;
+        getline(file, label);
+        name = label.substr(label.find(": ") + 2);
+
+        getline(file, label);
+        address = label.substr(label.find(": ") + 2);
+
+        getline(file, label);
+        acc_type = label.substr(label.find(": ") + 2)[0];
+
+        getline(file, label);
+        balance = stof(label.substr(label.find(": ") + 2));
+        
         file.close();
     }
 }

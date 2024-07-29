@@ -1,4 +1,4 @@
-abhi
-delhi
-c
-2800
+Name: shaurya
+Address: kanpur
+Type: S
+Balance: 100
