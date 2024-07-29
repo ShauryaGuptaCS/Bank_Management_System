@@ -1,115 +1,130 @@
-// C++ program to implement
-// Bank Management System
-
-#include <cstdlib>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <stdio.h>
+#include <fstream>
+#include <vector>
+#include <iomanip>
+
 using namespace std;
 
 class Bank {
-	string name, address;
-	char acc_type;
-	float balance;
+    string name, address;
+    char acc_type;
+    float balance;
 
 public:
-	void open_account();
-	void deposit_money();
-	void withdraw_money();
-	void display_account();
+    void open_account();
+    void deposit_money();
+    void withdraw_money();
+    void display_account();
+    void save_account();
+    void load_account();
+
+    string get_name() { return name; }
 };
 
-// Function to open the account
-void Bank::open_account()
-{
-	name = "Aman Jhurani";
-	cout << "Enter your full name: "
-		<< name << endl;
-	address = "Surat";
-	cout << "Enter your address: "
-		<< address << endl;
-	acc_type = 'S';
-	cout << "What type of account you want"
-		<< " to open saving(S) or Current(C): "
-		<< acc_type << endl;
-	balance = 8000;
-	cout << "Enter How much money you want to deposit: "
-		<< balance << endl;
-	cout << "Account Created Successfully";
+void Bank::open_account() {
+    cout << "Enter your full name: ";
+    cin.ignore();
+    getline(cin, name);
+    cout << "Enter your address: ";
+    getline(cin, address);
+    cout << "What type of account you want to open - saving(S) or current(C): ";
+    cin >> acc_type;
+    cout << "Enter how much money you want to deposit: ";
+    cin >> balance;
+    cout << "Account Created Successfully\n";
+    save_account();
 }
 
-// Function to deposit the account
-void Bank::deposit_money()
-{
-	int Amount;
-	Amount = 9500;
-	cout << "Enter how much money"
-		<< " you want to deposit: "
-		<< Amount << endl;
-	balance += Amount;
-	cout << "\n Available Balance: "
-		<< balance;
+void Bank::deposit_money() {
+    float amount;
+    cout << "Enter how much money you want to deposit: ";
+    cin >> amount;
+    balance += amount;
+    cout << "You have deposited: " << amount << "\n";
+    cout << "Available Balance: " << balance << "\n";
+    save_account();
 }
 
-// Function to display the account
-void Bank::display_account()
-{
-	cout << "Name: " << name << endl
-		<< "Address: " << address << endl
-		<< "Type: " << acc_type << endl
-		<< "Balance: " << balance << endl
-		<< endl;
+void Bank::withdraw_money() {
+    float amount;
+    cout << "Enter how much money you want to withdraw: ";
+    cin >> amount;
+    if (amount > balance) {
+        cout << "Insufficient balance\n";
+    } else {
+        balance -= amount;
+        cout << "You have withdrawn: " << amount << "\n";
+        cout << "Available Balance: " << balance << "\n";
+    }
+    save_account();
 }
 
-// Function to withdraw the account
-void Bank::withdraw_money()
-{
-	float amount;
-	amount = 3200;
-	cout << "Enter how much money "
-		<< "you want to withdraw: "
-		<< amount << endl;
-	balance -= amount;
-	cout << "\n Available balance: "
-		<< balance;
+void Bank::display_account() {
+    cout << "Name: " << name << "\n"
+         << "Address: " << address << "\n"
+         << "Type: " << acc_type << "\n"
+         << "Balance: " << balance << "\n\n";
 }
 
-// Driver code
-int main()
-{
-	int choice;
+void Bank::save_account() {
+    ofstream file("accounts.txt");
+    file << name << "\n" << address << "\n" << acc_type << "\n" << balance << "\n";
+    file.close();
+}
 
-	// Creating Customer Object of Bank Class
-	Bank customer;
+void Bank::load_account() {
+    ifstream file("accounts.txt");
+    if (file.is_open()) {
+        getline(file, name);
+        getline(file, address);
+        file >> acc_type;
+        file >> balance;
+        file.ignore(); // To ignore the newline character after reading balance
+        file.close();
+    }
+}
 
-	cout << "\n1) Open account \n\n";
-	// Calling open_account() function
-	// through customer object.
-	customer.open_account();
-	cout << "\n------------------------"
-		<< "-------------------------\n";
+void display_menu() {
+    cout << "Bank Management System\n";
+    cout << "1. Open Account\n";
+    cout << "2. Deposit Money\n";
+    cout << "3. Withdraw Money\n";
+    cout << "4. Display Account\n";
+    cout << "5. Exit\n";
+    cout << "Enter your choice: ";
+}
 
-	cout << "\n2) Deposit account \n\n";
-	// Calling deposit_money() function
-	// through customer object.
-	customer.deposit_money();
-	cout << "\n------------------------"
-		<< "-------------------------\n";
+int main() {
+    Bank customer;
+    int choice;
 
-	cout << "\n2) Withdraw money \n\n";
-	// Calling withdraw_money() function
-	// through customer object.
-	customer.withdraw_money();
-	cout << "\n------------------------"
-		<< "-------------------------\n";
+    customer.load_account();
 
-	cout << "\n4) Display Account \n\n";
-	// Calling display_account() function
-	// through customer object.
-	customer.display_account();
-	cout << "\n------------------------"
-		<< "-------------------------\n";
+    while (true) {
+        display_menu();
+        cin >> choice;
 
-	return 0;
+        switch (choice) {
+        case 1:
+            customer.open_account();
+            break;
+        case 2:
+            customer.deposit_money();
+            break;
+        case 3:
+            customer.withdraw_money();
+            break;
+        case 4:
+            customer.display_account();
+            break;
+        case 5:
+            cout << "Thank you for using the Bank Management System.\n";
+            return 0;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+        cout << "-------------------------\n";
+    }
+
+    return 0;
 }
