@@ -7,10 +7,18 @@ using namespace std;
 
 class Bank {
     string name, address;
-    char acc_type;
+    string acc_type;
     float balance;
 
 public:
+    //Default Constructor
+    Bank(){
+        name="";
+        address="";
+        acc_type="Saving account";
+        balance=0.00;
+    }  
+
     void open_account();
     void deposit_money();
     void withdraw_money();
@@ -18,31 +26,51 @@ public:
     void save_account();
     void load_account();
 
-    string get_name() { return name; }
+    string get_name() { 
+        return name; 
+    }
 };
 
+//Open Account Function
 void Bank::open_account() {
     cout << "Enter your full name: ";
     cin.ignore();
     getline(cin, name);
     cout << "Enter your address: ";
+    
     getline(cin, address);
 
-    // Validate account type
-    do {
-        cout << "What type of account you want to open - saving(S) or current(C): ";
-        cin >> acc_type;
-        acc_type = toupper(acc_type);  // Convert to uppercase to handle both 's' and 'S'
-        if (acc_type != 'S' && acc_type != 'C') {
-            cout << "Invalid account type. Please enter 'S' for saving or 'C' for current.\n";
+    
+    
+    bool flag = false;
+    while(!flag){
+        cout << "Enter 1 for Saving account or 2 for Current account: ";
+        int choice;
+        cin>>choice;
+        flag=true;
+        switch(choice){
+            case 1:
+                acc_type="Saving account";
+                break;
+            case 2:
+                acc_type="Current account";
+                break;
+            default:
+                cout<<"Invalid choice you should either type value 1 or 2";
+                flag = false;
         }
-    } while (acc_type != 'S' && acc_type != 'C');
+    }
+    
+    
 
     cout << "Enter how much money you want to deposit: ";
     cin >> balance;
     cout << "Account Created Successfully\n";
     save_account();
+    
 }
+
+
 
 void Bank::deposit_money() {
     float amount;
@@ -69,19 +97,29 @@ void Bank::withdraw_money() {
 }
 
 void Bank::display_account() {
+    if (name == "") {
+        cout << "No account information found. Please open an account first.\n";
+        return;
+    }
     cout << "Name: " << name << "\n"
          << "Address: " << address << "\n"
          << "Type: " << acc_type << "\n"
          << "Balance: " << balance << "\n\n";
 }
 
+
+//Save Account
 void Bank::save_account() {
     ofstream file("accounts.txt");
-    file << "Name: " << name << "\n";
-    file << "Address: " << address << "\n";
-    file << "Type: " << acc_type << "\n";
-    file << "Balance: " << balance << "\n";
-    file.close();
+    if (file.is_open()) {
+        file << "Name: " << name << "\n";
+        file << "Address: " << address << "\n";
+        file << "Account-Type: " << acc_type << "\n";
+        file << "Account Balance: " << balance << "\n";
+        file.close();
+    } else {
+        cout << "Error saving account data.\n";
+    }
 }
 
 void Bank::load_account() {
@@ -99,8 +137,10 @@ void Bank::load_account() {
 
         getline(file, label);
         balance = stof(label.substr(label.find(": ") + 2));
-        
+
         file.close();
+    } else {
+        cout << "No account found. You may need to open a new account.\n";
     }
 }
 
@@ -118,33 +158,33 @@ int main() {
     Bank customer;
     int choice;
 
-    customer.load_account();
+    customer.load_account();  // Try to load account data from the file
 
-    while (true) {
-        display_menu();
-        cin >> choice;
+        while (true) {
+            display_menu();
+            cin >> choice;
 
-        switch (choice) {
-        case 1:
-            customer.open_account();
-            break;
-        case 2:
-            customer.deposit_money();
-            break;
-        case 3:
-            customer.withdraw_money();
-            break;
-        case 4:
-            customer.display_account();
-            break;
-        case 5:
-            cout << "Thank you for using the Bank Management System.\n";
-            return 0;
-        default:
-            cout << "Invalid choice. Please try again.\n";
-        }
-        cout << "-------------------------\n";
+            switch (choice) {
+            case 1:{
+                customer.open_account();
+                break;
+            case 2:
+                customer.deposit_money();
+                break;
+            case 3:
+                customer.withdraw_money();
+                break;
+            case 4:
+                customer.display_account();
+                break;
+            case 5:
+                cout << "Thank you for using the Bank Management System.\n";
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+            }
+            cout << "-------------------------\n";
+        } 
     }
-
     return 0;
 }

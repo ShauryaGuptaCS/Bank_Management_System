@@ -1,4 +1,0 @@
-Name: shaurya
-Address: kanpur
-Type: S
-Balance: 100
